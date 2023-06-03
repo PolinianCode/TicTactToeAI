@@ -1,4 +1,4 @@
-#include <QApplication>
+﻿#include <QApplication>
 #include <QWidget>
 #include <QGridLayout>
 #include <QPushButton>
@@ -55,86 +55,65 @@ public:
         }
     }
 
-   //Check two functions
 
     int evel(char player) {
-        int score = 0;
+
+        if (checkWin(player)) {
+            return 100;
+        }
+
+        char opponent = (player == 'X') ? 'O' : 'X';
+        if (checkWin(opponent)) {
+            return -100;
+        }
+
+        if (isBoardFull()) {
+            return 0;
+        }
+
+        int playerCount = 0;
+        int opponentCount = 0;
 
         // Check rows
-        for (int row = 0; row < size; row++) {
-            int playerCount = 0;
-            int opponentCount = 0;
-            for (int col = 0; col < size; col++) {
-                if (board[row][col] == player) {
-                    playerCount++;
-                }
-                else if (board[row][col] != ' ') {
-                    opponentCount++;
-                }
-            }
-            score += evaluateLine(playerCount, opponentCount);
+        for (const auto& row : board) {
+            playerCount += std::count(row.begin(), row.end(), player);
+            opponentCount += std::count(row.begin(), row.end(), opponent);
         }
 
         // Check columns
-        for (int col = 0; col < size; col++) {
-            int playerCount = 0;
-            int opponentCount = 0;
-            for (int row = 0; row < size; row++) {
+        for (int col = 0; col < board.size(); ++col) {
+            for (int row = 0; row < board.size(); ++row) {
                 if (board[row][col] == player) {
                     playerCount++;
                 }
-                else if (board[row][col] != ' ') {
+                else if (board[row][col] == opponent) {
                     opponentCount++;
                 }
             }
-            score += evaluateLine(playerCount, opponentCount);
         }
 
-        // Check main diagonal
-        int playerCount = 0;
-        int opponentCount = 0;
-        for (int i = 0; i < size; i++) {
+        // Check diagonals
+        for (int i = 0; i < board.size(); ++i) {
             if (board[i][i] == player) {
                 playerCount++;
             }
-            else if (board[i][i] != ' ') {
+            else if (board[i][i] == opponent) {
                 opponentCount++;
             }
-        }
-        score += evaluateLine(playerCount, opponentCount);
-
-        // Check anti-diagonal
-        playerCount = 0;
-        opponentCount = 0;
-        for (int i = 0; i < size; i++) {
-            if (board[i][size - 1 - i] == player) {
+            if (board[i][board.size() - 1 - i] == player) {
                 playerCount++;
             }
-            else if (board[i][size - 1 - i] != ' ') {
+            else if (board[i][board.size() - 1 - i] == opponent) {
                 opponentCount++;
             }
         }
-        score += evaluateLine(playerCount, opponentCount);
 
-        return score;
-    }
+        
+        if (playerCount > 0 && opponentCount > 0) {
+            return 0;  
+        }
 
-    int evaluateLine(int playerCount, int opponentCount) {
-        if (playerCount == winSize) {
-            return 1000; // Player has a winning line
-        }
-        else if (opponentCount == winSize) {
-            return -1000; // Opponent has a winning line
-        }
-        else if (playerCount == winSize - 1 && opponentCount == 0) {
-            return 100; // Player has a line with one empty spot to win
-        }
-        else if (opponentCount == winSize - 1 && playerCount == 0) {
-            return -100; // Opponent has a line with one empty spot to win
-        }
-        else {
-            return 0; // No significant line
-        }
+        return playerCount - opponentCount;
     }
 
     void makeComputerMove() {
@@ -142,21 +121,34 @@ public:
         int bestRow = -1;
         int bestCol = -1;
 
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                if (board[row][col] == ' ') {
-                    board[row][col] = currentPlayer;
-                    int score = minimaxAlphaBeta(board, 4, INT_MIN, INT_MAX, false);
-                    board[row][col] = ' ';
 
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestRow = row;
-                        bestCol = col;
+        int centerRow = size / 2;
+        int centerCol = size / 2;
+
+        if (board[centerRow][centerCol] == ' ') {
+            bestRow = centerRow;
+            bestCol = centerCol;
+        }
+        else {
+            for (int row = 0; row < size; row++) {
+                for (int col = 0; col < size; col++) {
+                    if (board[row][col] == ' ') {
+                        board[row][col] = currentPlayer;
+                        int score = minimaxAlphaBeta(board, 4, INT_MIN, INT_MAX, false);
+                        qDebug() << "Move: (" << row << ", " << col << "), Score: " << score;
+                        board[row][col] = ' ';
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestRow = row;
+                            bestCol = col;
+                        }
                     }
                 }
             }
         }
+
+        
 
         if (bestRow != -1 && bestCol != -1) {
             QPushButton* button = static_cast<QPushButton*>(layout->itemAtPosition(bestRow, bestCol)->widget());
@@ -167,7 +159,7 @@ public:
     int minimaxAlphaBeta(QVector<QVector<char>>& board, int depth, int alpha, int beta, bool maximizingPlayer) {
         
 
-        if (depth == 0 || checkWin(currentPlayer) || checkWin((currentPlayer == 'X') ? 'O' : 'X')) {
+        if (depth == 0 || checkWin(currentPlayer) || checkWin((currentPlayer == 'X') ? 'O' : 'X') || isBoardFull()) {
             return evel(currentPlayer);
         }
 
