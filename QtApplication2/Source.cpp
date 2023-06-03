@@ -71,49 +71,7 @@ public:
             return 0;
         }
 
-        int playerCount = 0;
-        int opponentCount = 0;
-
-        // Check rows
-        for (const auto& row : board) {
-            playerCount += std::count(row.begin(), row.end(), player);
-            opponentCount += std::count(row.begin(), row.end(), opponent);
-        }
-
-        // Check columns
-        for (int col = 0; col < board.size(); ++col) {
-            for (int row = 0; row < board.size(); ++row) {
-                if (board[row][col] == player) {
-                    playerCount++;
-                }
-                else if (board[row][col] == opponent) {
-                    opponentCount++;
-                }
-            }
-        }
-
-        // Check diagonals
-        for (int i = 0; i < board.size(); ++i) {
-            if (board[i][i] == player) {
-                playerCount++;
-            }
-            else if (board[i][i] == opponent) {
-                opponentCount++;
-            }
-            if (board[i][board.size() - 1 - i] == player) {
-                playerCount++;
-            }
-            else if (board[i][board.size() - 1 - i] == opponent) {
-                opponentCount++;
-            }
-        }
-
-        
-        if (playerCount > 0 && opponentCount > 0) {
-            return 0;  
-        }
-
-        return playerCount - opponentCount;
+        return 0;
     }
 
     void makeComputerMove() {
