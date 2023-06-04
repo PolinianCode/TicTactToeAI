@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include <iostream>
+
 using namespace std;
 
 class TicTacToe : public QWidget {
@@ -71,23 +73,75 @@ public:
             return 0;
         }
 
+        int playerCount = 0;
+        int opponentCount = 0;
+
+        // Check rows
+        for (const auto& row : board) {
+            playerCount += std::count(row.begin(), row.end(), player);
+            opponentCount += std::count(row.begin(), row.end(), opponent);
+        }
+
+        // Check columns
+        for (int col = 0; col < board.size(); ++col) {
+            for (int row = 0; row < board.size(); ++row) {
+                if (board[row][col] == player) {
+                    playerCount++;
+                }
+                else if (board[row][col] == opponent) {
+                    opponentCount++;
+                }
+            }
+        }
+
+        // Check diagonals
+        for (int i = 0; i < board.size(); ++i) {
+            if (board[i][i] == player) {
+                playerCount++;
+            }
+            else if (board[i][i] == opponent) {
+                opponentCount++;
+            }
+            if (board[i][board.size() - 1 - i] == player) {
+                playerCount++;
+            }
+            else if (board[i][board.size() - 1 - i] == opponent) {
+                opponentCount++;
+            }
+        }
+
+
+        if (playerCount > opponentCount) {
+            return 25;
+        }
+        else {
+            return -25;
+        }
+
         return 0;
+
     }
+
+    bool canblockLine(char player) {
+        return false;
+    }
+   
 
     void makeComputerMove() {
         int bestScore = INT_MIN;
         int bestRow = -1;
         int bestCol = -1;
 
-
         int centerRow = size / 2;
         int centerCol = size / 2;
+
 
         if (board[centerRow][centerCol] == ' ') {
             bestRow = centerRow;
             bestCol = centerCol;
         }
         else {
+
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
                     if (board[row][col] == ' ') {
@@ -105,6 +159,7 @@ public:
                 }
             }
         }
+        
 
         
 
@@ -118,7 +173,7 @@ public:
         
 
         if (depth == 0 || checkWin(currentPlayer) || checkWin((currentPlayer == 'X') ? 'O' : 'X') || isBoardFull()) {
-            return evel(currentPlayer);
+            return evel('O');
         }
 
         if (maximizingPlayer) {
@@ -226,7 +281,7 @@ public:
         return false;
     }
 
-    bool isBoardFull() {
+    bool isBoardFull()   {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 if (board[row][col] == ' ') {
@@ -267,6 +322,8 @@ int main(int argc, char* argv[]) {
     game.setFixedSize(size * 100, size * 100);
     game.setWindowTitle("Tic Tac Toe");
     game.show();
+
+    
 
     return app.exec();
 }
