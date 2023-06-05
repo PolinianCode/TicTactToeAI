@@ -88,6 +88,12 @@ public:
                         opponentCount++;
                     }
                 }
+                if (playerCount == winSize) {
+                    return 100;
+                }
+                else if (opponentCount == winSize) {
+                    return -100;
+                }
                 if (playerCount > 0 && opponentCount == 0) {
                     playerRowCount += playerCount;
                 }
@@ -109,6 +115,68 @@ public:
                     else if (board[row + i][col] == opponent) {
                         opponentCount++;
                     }
+                }
+                if (playerCount == winSize) {
+                    return 100;
+                }
+                else if (opponentCount == winSize) {
+                    return -100;
+                }
+                if (playerCount > 0 && opponentCount == 0) {
+                    playerRowCount += playerCount;
+                }
+                else if (opponentCount > 0 && playerCount == 0) {
+                    opponentRowCount += opponentCount;
+                }
+            }
+        }
+
+        // Diagonal TLBR
+        for (int row = 0; row <= size - winSize; row++) {
+            for (int col = 0; col <= size - winSize; col++) {
+                int playerCount = 0;
+                int opponentCount = 0;
+                for (int i = 0; i < winSize; i++) {
+                    if (board[row + i][col + i] == player) {
+                        playerCount++;
+                    }
+                    else if (board[row + i][col + i] == opponent) {
+                        opponentCount++;
+                    }
+                }
+                if (playerCount == winSize) {
+                    return 100;
+                }
+                else if (opponentCount == winSize) {
+                    return -100;
+                }
+                if (playerCount > 0 && opponentCount == 0) {
+                    playerRowCount += playerCount;
+                }
+                else if (opponentCount > 0 && playerCount == 0) {
+                    opponentRowCount += opponentCount;
+                }
+            }
+        }
+
+        // Diagonal TRBL
+        for (int row = 0; row <= size - winSize; row++) {
+            for (int col = size - 1; col >= winSize - 1; col--) {
+                int playerCount = 0;
+                int opponentCount = 0;
+                for (int i = 0; i < winSize; i++) {
+                    if (board[row + i][col - i] == player) {
+                        playerCount++;
+                    }
+                    else if (board[row + i][col - i] == opponent) {
+                        opponentCount++;
+                    }
+                }
+                if (playerCount == winSize) {
+                    return 100;
+                }
+                else if (opponentCount == winSize) {
+                    return -100;
                 }
                 if (playerCount > 0 && opponentCount == 0) {
                     playerRowCount += playerCount;
