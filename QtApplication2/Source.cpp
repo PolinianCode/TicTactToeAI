@@ -72,60 +72,56 @@ public:
         if (isBoardFull()) {
             return 0;
         }
+        int playerRowCount = 0;
+        int opponentRowCount = 0;
 
-        int playerCount = 0;
-        int opponentCount = 0;
-
-        // Check rows
-        for (const auto& row : board) {
-            playerCount += std::count(row.begin(), row.end(), player);
-            opponentCount += std::count(row.begin(), row.end(), opponent);
-        }
-
-        // Check columns
-        for (int col = 0; col < board.size(); ++col) {
-            for (int row = 0; row < board.size(); ++row) {
-                if (board[row][col] == player) {
-                    playerCount++;
+        // Row
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col <= size - winSize; col++) {
+                int playerCount = 0;
+                int opponentCount = 0;
+                for (int i = 0; i < winSize; i++) {
+                    if (board[row][col + i] == player) {
+                        playerCount++;
+                    }
+                    else if (board[row][col + i] == opponent) {
+                        opponentCount++;
+                    }
                 }
-                else if (board[row][col] == opponent) {
-                    opponentCount++;
+                if (playerCount > 0 && opponentCount == 0) {
+                    playerRowCount += playerCount;
+                }
+                else if (opponentCount > 0 && playerCount == 0) {
+                    opponentRowCount += opponentCount;
                 }
             }
         }
 
-        // Check diagonals
-        for (int i = 0; i < board.size(); ++i) {
-            if (board[i][i] == player) {
-                playerCount++;
-            }
-            else if (board[i][i] == opponent) {
-                opponentCount++;
-            }
-            if (board[i][board.size() - 1 - i] == player) {
-                playerCount++;
-            }
-            else if (board[i][board.size() - 1 - i] == opponent) {
-                opponentCount++;
+        // Col
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row <= size - winSize; row++) {
+                int playerCount = 0;
+                int opponentCount = 0;
+                for (int i = 0; i < winSize; i++) {
+                    if (board[row + i][col] == player) {
+                        playerCount++;
+                    }
+                    else if (board[row + i][col] == opponent) {
+                        opponentCount++;
+                    }
+                }
+                if (playerCount > 0 && opponentCount == 0) {
+                    playerRowCount += playerCount;
+                }
+                else if (opponentCount > 0 && playerCount == 0) {
+                    opponentRowCount += opponentCount;
+                }
             }
         }
 
-
-        if (playerCount > opponentCount) {
-            return 25;
-        }
-        else {
-            return -25;
-        }
-
-        return 0;
+        return playerRowCount - opponentRowCount;
 
     }
-
-    bool canblockLine(char player) {
-        return false;
-    }
-   
 
     void makeComputerMove() {
         int bestScore = INT_MIN;
@@ -136,7 +132,7 @@ public:
         int centerCol = size / 2;
 
 
-        if (board[centerRow][centerCol] == ' ') {
+       if (board[centerRow][centerCol] == ' ') {
             bestRow = centerRow;
             bestCol = centerCol;
         }
