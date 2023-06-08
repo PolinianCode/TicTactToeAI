@@ -75,7 +75,7 @@ public:
         int playerRowCount = 0;
         int opponentRowCount = 0;
 
-        // Row
+        // Roww
         for (int row = 0; row < size; row++) {
             for (int col = 0; col <= size - winSize; col++) {
                 int playerCount = 0;
